@@ -2,21 +2,9 @@ package ru.tvhelp.akruglov.criminalintent
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.Fragment
 
-class CrimeActivity : AppCompatActivity() {
+class CrimeActivity : SingleFragmentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_crime)
-
-        val fm = supportFragmentManager
-        var fragment = fm.findFragmentById(R.id.fragmentContainer)
-
-        if (fragment == null) {
-            fragment = CrimeFragment()
-            fm.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
-                    .commit()
-        }
-    }
+    override fun createFragment(): Fragment  = CrimeFragment()
 }
