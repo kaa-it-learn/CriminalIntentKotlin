@@ -15,7 +15,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Crime Title"
-        android:textColor="@android:color/black"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/crimeItemSolved"
         app:layout_constraintStart_toStartOf="parent"
