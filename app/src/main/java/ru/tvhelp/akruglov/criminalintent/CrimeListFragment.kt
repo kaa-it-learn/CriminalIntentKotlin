@@ -75,8 +75,9 @@ class CrimeListFragment: Fragment() {
                 return
             }
 
-            val crimePosition = CrimeActivity.crimePosition(data)
-            updateUI(crimePosition)
+            val crimePosition = CrimePagerActivity.crimePosition(data)
+            //updateUI(crimePosition)
+            updateUI(-1)
         }
     }
 
@@ -101,8 +102,8 @@ class CrimeListFragment: Fragment() {
         }
 
         override fun onClick(v: View?) {
-            startActivityForResult<CrimeActivity>(REQUEST_CRIME, CrimeActivity.EXTRA_CRIME_ID to crime.id,
-                    CrimeActivity.EXTRA_CRIME_POSITION to adapterPosition)
+            startActivityForResult<CrimePagerActivity>(REQUEST_CRIME, CrimePagerActivity.EXTRA_CRIME_ID to crime.id,
+                    CrimePagerActivity.EXTRA_CRIME_POSITION to adapterPosition)
         }
     }
 

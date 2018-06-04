@@ -76,7 +76,7 @@ class CrimeFragment: Fragment() {
 
     private fun setActivityResult(crimePosition: Int) {
         val data = Intent()
-        data.putExtra(CrimeActivity.EXTRA_CRIME_POSITION, crimePosition)
+        data.putExtra(CrimePagerActivity.EXTRA_CRIME_POSITION, crimePosition)
         activity?.setResult(Activity.RESULT_OK, data)
     }
 }
