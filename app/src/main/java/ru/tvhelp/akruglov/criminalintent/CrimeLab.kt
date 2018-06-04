@@ -5,7 +5,7 @@ import java.util.*
 
 class CrimeLab private constructor(context: Context) {
 
-    val crimes = hashMapOf<UUID, Crime>()//mutableListOf<Crime>()
+    val crimes = mutableMapOf<UUID, Crime>()
 
     init {
         for (i in 0..99) {

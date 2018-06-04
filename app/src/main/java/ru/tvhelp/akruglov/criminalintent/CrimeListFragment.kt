@@ -1,6 +1,8 @@
 package ru.tvhelp.akruglov.criminalintent
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,7 +13,7 @@ import android.view.ViewGroup
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.fragment_crime_list.*
 import kotlinx.android.synthetic.main.list_item_crime.*
-import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.support.v4.startActivityForResult
 
 enum class CrimeType {
     SIMPLE_CRIME_TYPE, POLICE_CRIME_TYPE;
@@ -28,6 +30,10 @@ enum class CrimeType {
 
 class CrimeListFragment: Fragment() {
 
+    companion object {
+        const val REQUEST_CRIME = 0
+    }
+
     private var adapter: CrimeAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -40,19 +46,37 @@ class CrimeListFragment: Fragment() {
         updateUI()
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         updateUI()
-    }
+    }*/
 
-    private fun updateUI() {
+    private fun updateUI(crimePosition: Int = -1) {
         val crimeLab = CrimeLab.getInstance(activity as Context)
 
         if (adapter == null) {
-            adapter = CrimeAdapter(crimeLab.crimes)
+            adapter = CrimeAdapter(crimeLab.crimes.values.toMutableList())
             crimeRecyclerView.adapter = adapter
         } else {
-            (adapter as CrimeAdapter).notifyDataSetChanged()
+            if (crimePosition == -1)
+                (adapter as CrimeAdapter).notifyDataSetChanged()
+            else
+                (adapter as CrimeAdapter).notifyItemChanged(crimePosition)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        if (requestCode == REQUEST_CRIME) {
+            if (data == null) {
+                return
+            }
+
+            val crimePosition = CrimeActivity.crimePosition(data)
+            updateUI(crimePosition)
         }
     }
 
@@ -77,7 +101,8 @@ class CrimeListFragment: Fragment() {
         }
 
         override fun onClick(v: View?) {
-            startActivity<CrimeActivity>(CrimeActivity.EXTRA_CRIME_ID to crime.id)
+            startActivityForResult<CrimeActivity>(REQUEST_CRIME, CrimeActivity.EXTRA_CRIME_ID to crime.id,
+                    CrimeActivity.EXTRA_CRIME_POSITION to adapterPosition)
         }
     }
 
