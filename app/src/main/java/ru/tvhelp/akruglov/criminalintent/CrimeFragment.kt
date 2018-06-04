@@ -11,6 +11,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_crime.*
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.customView
+import org.jetbrains.anko.datePicker
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.verticalLayout
 import java.text.FieldPosition
 import java.util.*
 
@@ -66,12 +71,45 @@ class CrimeFragment: Fragment() {
             }
         })
 
-        crimeDate.text = crime.date.toString()
-        crimeDate.isEnabled = false
+        updateDate()
 
         crimeSolved.setOnCheckedChangeListener { _, isChecked ->
             crime.solved = isChecked
         }
+
+        crimeDate.setOnClickListener {
+
+            val calendar = Calendar.getInstance()
+            calendar.time = crime.date
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            alert() {
+                title = getString(R.string.date_picker_title)
+                customView {
+                    verticalLayout {
+                        val dateView = datePicker {
+                            init(year, month, day, null)
+                        }
+                        positiveButton(android.R.string.ok) {
+                            val date = GregorianCalendar(
+                                    dateView.year,
+                                    dateView.month,
+                                    dateView.dayOfMonth).time
+                            crime.date = date
+                            updateDate()
+                        }
+                    }
+
+                }
+
+            }.show()
+        }
+    }
+
+    private fun updateDate() {
+        crimeDate.text = crime.date.toString()
     }
 
     private fun setActivityResult(crimePosition: Int) {
