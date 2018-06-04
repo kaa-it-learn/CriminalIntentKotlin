@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_crime_pager.*
 import java.util.*
@@ -45,6 +46,29 @@ class CrimePagerActivity: AppCompatActivity() {
                 crimeViewPager.currentItem = i
                 break
             }
+        }
+
+        crimeViewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                crimeItemFirst.isEnabled = crimeViewPager.currentItem != 0
+                crimeItemLast.isEnabled = crimeViewPager.currentItem != crimes.size - 1
+            }
+        })
+
+        crimeItemFirst.setOnClickListener {
+            crimeViewPager.currentItem = 0
+        }
+
+        crimeItemLast.setOnClickListener {
+            crimeViewPager.currentItem = crimes.size - 1
         }
     }
 }
