@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.fragment_crime_list.*
 import kotlinx.android.synthetic.main.list_item_crime.*
@@ -36,6 +34,11 @@ class CrimeListFragment: Fragment() {
 
     private var adapter: CrimeAdapter? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_crime_list, container, false)
     }
@@ -46,10 +49,10 @@ class CrimeListFragment: Fragment() {
         updateUI()
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        updateUI()
-    }*/
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.fragment_crime_list, menu)
+    }
 
     private fun updateUI(crimePosition: Int = -1) {
         val crimeLab = CrimeLab.getInstance(activity as Context)
