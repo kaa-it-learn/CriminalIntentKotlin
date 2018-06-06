@@ -26,7 +26,7 @@ class CrimePagerActivity: AppCompatActivity() {
         setContentView(R.layout.activity_crime_pager)
 
         val crimeLab = CrimeLab.getInstance(this)
-        crimes = crimeLab.crimes.values.toMutableList()
+        crimes = crimeLab.crimes
 
         val crimeId = intent.getSerializableExtra(EXTRA_CRIME_ID) as UUID
         val crimePosition = intent.getIntExtra(EXTRA_CRIME_POSITION, 0)
