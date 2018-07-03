@@ -1,28 +1,27 @@
 package ru.tvhelp.akruglov.criminalintent
 
 import android.content.Context
+import ru.tvhelp.akruglov.criminalintent.data.db.CrimeDb
 import java.util.*
 
 class CrimeLab private constructor(context: Context) {
 
-    val crimes = mutableListOf<Crime>()
+    private val database = CrimeDb(context.applicationContext)
+    private val context = context.applicationContext
 
-    init {
-        /*for (i in 0..99) {
-            val crime = Crime()
-            crime.title = "Crime #$i"
-            crime.solved = i % 2 == 0
-            crime.requirePolice = i % 2 != 0
-            crimes[crime.id] = crime
-        }*/
-    }
+    fun getCrimes() = database.requestCrimes()
+
 
     fun add(crime: Crime) {
-        crimes.add(crime)
+        database.addCrime(crime)
+    }
+
+    fun update(crime: Crime) {
+        database.updateCrime(crime)
     }
 
     operator fun get(id: UUID): Crime? {
-        return crimes.find { it.id == id }
+        return database.requestCrimeByUUID(id)
     }
 
     companion object: SingletonHolder<CrimeLab, Context>(::CrimeLab)

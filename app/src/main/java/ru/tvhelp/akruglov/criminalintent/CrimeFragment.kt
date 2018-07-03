@@ -108,6 +108,13 @@ class CrimeFragment: Fragment() {
         }
     }
 
+
+    override fun onPause() {
+        super.onPause()
+
+        CrimeLab.getInstance(activity!!).update(crime)
+    }
+
     private fun updateDate() {
         crimeDate.text = crime.date.toString()
     }

@@ -19,14 +19,14 @@ class CrimePagerActivity: AppCompatActivity() {
         fun crimePosition(result: Intent) = result.getIntExtra(EXTRA_CRIME_POSITION, 0)
     }
 
-    private lateinit var crimes: MutableList<Crime>
+    private lateinit var crimes: List<Crime>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crime_pager)
 
         val crimeLab = CrimeLab.getInstance(this)
-        crimes = crimeLab.crimes
+        crimes = crimeLab.getCrimes()
 
         val crimeId = intent.getSerializableExtra(EXTRA_CRIME_ID) as UUID
         val crimePosition = intent.getIntExtra(EXTRA_CRIME_POSITION, 0)

@@ -86,7 +86,7 @@ class CrimeListFragment: Fragment() {
     }
 
     fun updateSubtitle() {
-        val crimeCount = CrimeLab.getInstance(activity as Context).crimes.size
+        val crimeCount = CrimeLab.getInstance(activity as Context).getCrimes().size
         var subtitle: String? = resources.getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount)
         if (!subtitleVisible) {
             subtitle = null
@@ -98,9 +98,10 @@ class CrimeListFragment: Fragment() {
         val crimeLab = CrimeLab.getInstance(activity as Context)
 
         if (adapter == null) {
-            adapter = CrimeAdapter(crimeLab.crimes)
+            adapter = CrimeAdapter(crimeLab.getCrimes())
             crimeRecyclerView.adapter = adapter
         } else {
+            (adapter as CrimeAdapter).crimes = CrimeLab.getInstance(activity!!).getCrimes()
             if (crimePosition == -1)
                 (adapter as CrimeAdapter).notifyDataSetChanged()
             else
@@ -157,7 +158,7 @@ class CrimeListFragment: Fragment() {
         }
     }
 
-    private inner class CrimeAdapter(val crimes: MutableList<Crime>): RecyclerView.Adapter<CrimeHolder>() {
+    private inner class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<CrimeHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
             val layoutInflater = LayoutInflater.from(activity)
