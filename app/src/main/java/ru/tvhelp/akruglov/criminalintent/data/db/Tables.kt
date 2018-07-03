@@ -8,4 +8,5 @@ object CrimeTable {
     const val DATE = "date"
     const val SOLVED = "solved"
     const val REQUIRE_POLICE = "requirePolice"
+    const val SUSPECT = "suspect"
 }

@@ -9,26 +9,6 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-fun Array<out Pair<String, Any?>>.toContentValues(): ContentValues {
-    val values = ContentValues()
-    for ((key, value) in this) {
-        when(value) {
-            null -> values.putNull(key)
-            is Boolean -> values.put(key, value)
-            is Byte -> values.put(key, value)
-            is ByteArray -> values.put(key, value)
-            is Double -> values.put(key, value)
-            is Float -> values.put(key, value)
-            is Int -> values.put(key, value)
-            is Long -> values.put(key, value)
-            is Short -> values.put(key, value)
-            is String -> values.put(key, value)
-            else -> throw IllegalArgumentException("Non-supported value type: ${value.javaClass.name}")
-        }
-    }
-    return values
-}
-
 class CrimeDb(private val context: Context,
               private val crimeDbHelper: CrimeDbHelper = CrimeDbHelper.instance(context.applicationContext),
               private val dataMapper: DbDataMapper = DbDataMapper()) {
@@ -37,7 +17,7 @@ class CrimeDb(private val context: Context,
 
     fun addCrime(c: Crime) = crimeDbHelper.use {
         with(dataMapper.convertFromDomain(c)) {
-            insertOrThrow(CrimeTable.NAME, null, map.toVarargArray().toContentValues())
+            insert(CrimeTable.NAME, *map.toVarargArray())
         }
     }
 
