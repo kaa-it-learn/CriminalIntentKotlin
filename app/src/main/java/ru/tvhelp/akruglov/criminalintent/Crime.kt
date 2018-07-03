@@ -8,4 +8,7 @@ data class Crime(val _id: Long = 0,
                  var date: Date = Date(),
                  var solved: Boolean = false,
                  var requirePolice: Boolean = false,
-                 var suspect: String = "")
+                 var suspect: String = "") {
+
+    val photoFilename = "IMG_" + id.toString() + ".jpg"
+}

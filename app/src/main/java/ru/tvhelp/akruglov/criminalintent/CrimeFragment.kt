@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -16,8 +18,10 @@ import kotlinx.android.synthetic.main.fragment_crime.*
 import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.customView
 import org.jetbrains.anko.datePicker
+import org.jetbrains.anko.imageBitmap
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.verticalLayout
+import java.io.File
 import java.text.DateFormat
 import java.text.FieldPosition
 import java.text.SimpleDateFormat
@@ -30,6 +34,7 @@ class CrimeFragment: Fragment() {
         private const val ARG_CRIME_POSITION = "crime_position"
 
         private const val REQUEST_CONTACT = 0
+        private const val REQUEST_PHOTO = 1
 
         fun newInstance(crimeId: UUID, crimePosition: Int): CrimeFragment {
             val args = Bundle()
@@ -43,6 +48,7 @@ class CrimeFragment: Fragment() {
     }
 
     private lateinit var crime: Crime
+    private lateinit var photoFile: File
     //private var crimePosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +56,7 @@ class CrimeFragment: Fragment() {
         val crimeId = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         val crimePosition = arguments?.getInt(ARG_CRIME_POSITION) as Int
         crime = CrimeLab.getInstance(activity as Context)[crimeId]!!
+        photoFile = CrimeLab.getInstance(activity as Context).getPhotoFile(crime)
         setActivityResult(crimePosition)
     }
 
@@ -135,6 +142,28 @@ class CrimeFragment: Fragment() {
         if (activity!!.packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
             crimeSuspect.isEnabled = false
         }
+
+        val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        val canTakePhoto = captureImage.resolveActivity(activity!!.packageManager) != null
+        crimeCamera.isEnabled = canTakePhoto
+
+        crimeCamera.setOnClickListener {
+            val uri = FileProvider.getUriForFile(activity!!,
+                    "ru.tvhelp.akruglov.criminalintent.fileprovider",
+                    photoFile)
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            val cameraActivities = activity!!.packageManager.queryIntentActivities(captureImage,
+                    PackageManager.MATCH_DEFAULT_ONLY)
+            for (activityInfo in cameraActivities) {
+                activity!!.grantUriPermission(activityInfo.activityInfo.packageName,
+                        uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
+
+            startActivityForResult(captureImage, REQUEST_PHOTO)
+        }
+
+        updatePhotoView()
     }
 
 
@@ -146,6 +175,15 @@ class CrimeFragment: Fragment() {
 
     private fun updateDate() {
         crimeDate.text = crime.date.toString()
+    }
+
+    private fun updatePhotoView() {
+        if (!photoFile.exists()) {
+            crimePhoto.setImageDrawable(null)
+        } else {
+            val bitmap = getScaledBitmap(photoFile.path, activity!!)
+            crimePhoto.imageBitmap = bitmap
+        }
     }
 
     private fun getCrimeReport(): String {
@@ -197,6 +235,14 @@ class CrimeFragment: Fragment() {
             } finally {
                 c.close()
             }
+        } else if (requestCode == REQUEST_PHOTO) {
+            val uri = FileProvider.getUriForFile(activity!!,
+                    "ru.tvhelp.akruglov.criminalintent.fileprovider",
+                    photoFile)
+
+            activity!!.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
+            updatePhotoView()
         }
     }
 }
