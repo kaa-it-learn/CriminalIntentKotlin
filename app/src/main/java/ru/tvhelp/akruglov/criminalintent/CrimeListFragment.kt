@@ -34,12 +34,27 @@ class CrimeListFragment: Fragment() {
         const val SAVED_SUBTITLE_VISIBLE = "subtitle"
     }
 
+    public interface Callbacks {
+        fun onCrimeSelected(crime: Crime, position: Int)
+    }
+
     private var adapter: CrimeAdapter? = null
     private var subtitleVisible = false
+    private var callbacks: Callbacks? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -72,8 +87,8 @@ class CrimeListFragment: Fragment() {
         R.id.new_crime -> {
             val crime =  Crime()
             CrimeLab.getInstance(activity as Context).add(crime)
-            startActivityForResult<CrimePagerActivity>(REQUEST_CRIME,CrimePagerActivity.EXTRA_CRIME_ID to crime.id,
-                    CrimePagerActivity.EXTRA_CRIME_POSITION to -1)
+            updateUI(-1)
+            callbacks?.onCrimeSelected(crime, -1)
             true
         }
         R.id.show_subtitle -> {
@@ -94,7 +109,7 @@ class CrimeListFragment: Fragment() {
         (activity as AppCompatActivity).supportActionBar?.subtitle = subtitle
     }
 
-    private fun updateUI(crimePosition: Int = -1) {
+    fun updateUI(crimePosition: Int = -1) {
         val crimeLab = CrimeLab.getInstance(activity as Context)
 
         if (adapter == null) {
@@ -153,8 +168,7 @@ class CrimeListFragment: Fragment() {
         }
 
         override fun onClick(v: View?) {
-            startActivityForResult<CrimePagerActivity>(REQUEST_CRIME, CrimePagerActivity.EXTRA_CRIME_ID to crime.id,
-                    CrimePagerActivity.EXTRA_CRIME_POSITION to adapterPosition)
+            callbacks?.onCrimeSelected(crime, adapterPosition)
         }
     }
 

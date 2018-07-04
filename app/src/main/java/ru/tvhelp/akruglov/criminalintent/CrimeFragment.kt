@@ -47,14 +47,29 @@ class CrimeFragment: Fragment() {
         }
     }
 
+    public interface Callbacks {
+        fun onCrimeUpdated(crime: Crime, position: Int)
+    }
+
     private lateinit var crime: Crime
     private lateinit var photoFile: File
-    //private var crimePosition: Int = 0
+    private var callbacks: Callbacks? = null
+    private var crimePosition: Int = 0
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val crimeId = arguments?.getSerializable(ARG_CRIME_ID) as UUID
-        val crimePosition = arguments?.getInt(ARG_CRIME_POSITION) as Int
+        crimePosition = arguments?.getInt(ARG_CRIME_POSITION) as Int
         crime = CrimeLab.getInstance(activity as Context)[crimeId]!!
         photoFile = CrimeLab.getInstance(activity as Context).getPhotoFile(crime)
         setActivityResult(crimePosition)
@@ -73,6 +88,7 @@ class CrimeFragment: Fragment() {
         crimeTitle.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 crime.title = s.toString()
+                updateCrime()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -88,6 +104,7 @@ class CrimeFragment: Fragment() {
 
         crimeSolved.setOnCheckedChangeListener { _, isChecked ->
             crime.solved = isChecked
+            updateCrime()
         }
 
         crimeDate.setOnClickListener {
@@ -232,6 +249,7 @@ class CrimeFragment: Fragment() {
                 c.moveToFirst()
                 crime.suspect = c.getString(0)
                 crimeSuspect.text = crime.suspect
+                updateCrime()
             } finally {
                 c.close()
             }
@@ -242,7 +260,13 @@ class CrimeFragment: Fragment() {
 
             activity!!.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
+            updateCrime()
             updatePhotoView()
         }
+    }
+
+    private fun updateCrime() {
+        CrimeLab.getInstance(activity!!).update(crime)
+        callbacks?.onCrimeUpdated(crime, crimePosition)
     }
 }

@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_crime_pager.*
 import java.util.*
 
-class CrimePagerActivity: AppCompatActivity() {
+class CrimePagerActivity: AppCompatActivity(), CrimeFragment.Callbacks {
 
     companion object {
         const val EXTRA_CRIME_ID = "ru.tvhelp.akruglov.criminalintent.crime_id"
@@ -70,5 +70,9 @@ class CrimePagerActivity: AppCompatActivity() {
         crimeItemLast.setOnClickListener {
             crimeViewPager.currentItem = crimes.size - 1
         }
+    }
+
+    override fun onCrimeUpdated(crime: Crime, position: Int) {
+
     }
 }
