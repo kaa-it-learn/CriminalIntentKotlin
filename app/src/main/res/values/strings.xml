@@ -9,7 +9,7 @@
     <string name="date_picker_title">Date of crime:</string>
     <string name="new_crime">New Crime</string>
     <string name="show_subtitle">Show Subtitle</string>
-    <string name="hide_subtitle"></string>
+    <string name="hide_subtitle" translatable="false"></string>
     <plurals name="subtitle_plural">
         <item quantity="one">%d crime</item>
         <item quantity="other">%d crimes</item>
